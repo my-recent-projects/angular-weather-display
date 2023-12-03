@@ -1,0 +1,104 @@
+<mat-card class="weather-item-container">
+    <mat-card-header>
+        <div class="icon-and-heading-text">
+            <mat-icon class="icon"> calendar_month </mat-icon>
+            
+            <div> Today</div>
+        </div>
+    </mat-card-header>
+
+    <mat-card-content class="weather-data-value">
+    {{CurrentDate | date:'yyyy-MM-dd'}}
+    </mat-card-content>
+</mat-card>
+
+
+<div *ngIf="_error">
+    <!-- <mat-card class="weather-item-container" >
+        <mat-card-header>
+            <div class="icon-and-heading-text">
+                <mat-icon class="icon"> location_disabled </mat-icon>
+                <div> Current location</div>
+            </div>
+        </mat-card-header>
+        <mat-card-content class="weather-data-value">
+            {{_error.message}}
+        </mat-card-content>
+    </mat-card> -->
+
+    <mat-card class="weather-item-container">
+        <mat-card-header>
+            <div class="icon-and-heading-text">
+                <mat-icon class="icon"> report</mat-icon>
+                <div> Message</div>
+            </div>
+        </mat-card-header>
+        <mat-card-content class="weather-data-value">
+            <p>Weather details could not be loaded due to unavailability of current geolocation information. </p>
+        </mat-card-content>
+    </mat-card>
+    
+</div>
+
+
+<div *ngIf="!_error">
+
+    <mat-card class="weather-item-container">
+        <mat-card-header>
+            <div class="icon-and-heading-text">
+                <mat-icon class="icon"> my_location</mat-icon>
+                <div> Current location</div>
+            </div>
+        </mat-card-header>
+        <mat-card-content class="weather-data-value">
+            <b class="loc-coordinate">Lat </b> [{{currentWeather.latitude}}] ,
+            <b class="loc-coordinate">Long</b> [{{currentWeather.longitude}}]
+        </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="weather-item-container">
+        <mat-card-header>
+            <div class="icon-and-heading-text">
+                <mat-icon class="icon">thermostat</mat-icon>
+                <div>Temperature</div>
+            </div>
+        </mat-card-header>
+        <mat-card-content class="weather-data-value">
+            {{currentWeather.current.temperature_2m +" "+ currentWeather.current_units.temperature_2m}} 
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card class="weather-item-container">
+        <mat-card-header>
+            <div class="icon-and-heading-text">
+                <mat-icon class="icon"> thunderstorm</mat-icon>
+                <div>Rain</div>
+            </div>
+        </mat-card-header>
+        <mat-card-content class="weather-data-value">{{currentWeather.current.rain +" "+
+            currentWeather.current_units.rain}}</mat-card-content>
+    </mat-card>
+    
+    <mat-card class="weather-item-container">
+        <mat-card-header>
+            <div class="icon-and-heading-text">
+                <mat-icon class="icon"> water_drop</mat-icon>
+                <div>Humidity</div>
+            </div>
+        </mat-card-header>
+        <mat-card-content class="weather-data-value">{{currentWeather.current.relative_humidity_2m +" "+ currentWeather.current_units.relative_humidity_2m}}</mat-card-content>
+    </mat-card>
+
+    <mat-card class="weather-item-container">
+        <mat-card-header>
+            <div class="icon-and-heading-text">
+                <mat-icon class="icon">speed</mat-icon>
+                <div>Wind speed</div>
+            </div>
+        </mat-card-header>
+        <mat-card-content class="weather-data-value">
+            {{currentWeather.current.wind_speed_10m +" "+
+            currentWeather.current_units.wind_speed_10m}}
+        </mat-card-content>
+    </mat-card>
+</div>
