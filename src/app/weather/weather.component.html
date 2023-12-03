@@ -1,30 +1,37 @@
+<mat-card class="server-error-message" *ngIf="_httpResponseError.length != 0">
+
+    <mat-card-header>
+        <div class="icon-and-heading-text">
+            <mat-icon class="error-icon"> notifications_none< </mat-icon>
+            <div> Alert!</div>
+        </div>
+    </mat-card-header>
+
+    <mat-card-content class="error-message">           
+        {{_httpResponseError}}
+    </mat-card-content>
+
+</mat-card>
+
+<div class="weather-content-container">
+
+
 <mat-card class="weather-item-container">
     <mat-card-header>
         <div class="icon-and-heading-text">
             <mat-icon class="icon"> calendar_month </mat-icon>
-            
+
             <div> Today</div>
         </div>
     </mat-card-header>
 
     <mat-card-content class="weather-data-value">
-    {{CurrentDate | date:'yyyy-MM-dd'}}
+        {{CurrentDate | date:'yyyy-MM-dd HH:mm:ss'}}
     </mat-card-content>
 </mat-card>
 
 
 <div *ngIf="_error">
-    <!-- <mat-card class="weather-item-container" >
-        <mat-card-header>
-            <div class="icon-and-heading-text">
-                <mat-icon class="icon"> location_disabled </mat-icon>
-                <div> Current location</div>
-            </div>
-        </mat-card-header>
-        <mat-card-content class="weather-data-value">
-            {{_error.message}}
-        </mat-card-content>
-    </mat-card> -->
 
     <mat-card class="weather-item-container">
         <mat-card-header>
@@ -37,7 +44,7 @@
             <p>Weather details could not be loaded due to unavailability of current geolocation information. </p>
         </mat-card-content>
     </mat-card>
-    
+
 </div>
 
 
@@ -51,20 +58,31 @@
             </div>
         </mat-card-header>
         <mat-card-content class="weather-data-value">
-            <b class="loc-coordinate">Lat </b> [{{currentWeather.latitude}}] ,
-            <b class="loc-coordinate">Long</b> [{{currentWeather.longitude}}]
+            [ {{currentWeather.latitude}} ,  {{currentWeather.longitude}} ]
         </mat-card-content>
     </mat-card>
-    
+
     <mat-card class="weather-item-container">
         <mat-card-header>
-            <div class="icon-and-heading-text">
+            <div class="icon-and-heading-text ">
                 <mat-icon class="icon">thermostat</mat-icon>
                 <div>Temperature</div>
             </div>
         </mat-card-header>
         <mat-card-content class="weather-data-value">
-            {{currentWeather.current.temperature_2m +" "+ currentWeather.current_units.temperature_2m}} 
+
+            {{
+            ((currentWeatherTemperature) | number:'2.0-1') +" "+
+            currentWeatherTemperatureUnit
+            }}
+            <br/>
+            <mat-radio-group class="temperature-unit-conversion" aria-label="Select an option">
+                <mat-radio-button #selectedOption (change)="ChangeTemperatureUnit(selectedOption.value)"
+                    *ngFor="let unit of temperatureUnits" [checked]="unit.checked" [value]="unit.id">
+                    {{unit.name}}
+                </mat-radio-button>
+            </mat-radio-group>
+
         </mat-card-content>
     </mat-card>
 
@@ -78,7 +96,7 @@
         <mat-card-content class="weather-data-value">{{currentWeather.current.rain +" "+
             currentWeather.current_units.rain}}</mat-card-content>
     </mat-card>
-    
+
     <mat-card class="weather-item-container">
         <mat-card-header>
             <div class="icon-and-heading-text">
@@ -86,7 +104,8 @@
                 <div>Humidity</div>
             </div>
         </mat-card-header>
-        <mat-card-content class="weather-data-value">{{currentWeather.current.relative_humidity_2m +" "+ currentWeather.current_units.relative_humidity_2m}}</mat-card-content>
+        <mat-card-content class="weather-data-value">{{((currentWeather.current.relative_humidity_2m) | number:'2.0-1')
+            +" "+ currentWeather.current_units.relative_humidity_2m}}</mat-card-content>
     </mat-card>
 
     <mat-card class="weather-item-container">
@@ -97,8 +116,11 @@
             </div>
         </mat-card-header>
         <mat-card-content class="weather-data-value">
-            {{currentWeather.current.wind_speed_10m +" "+
+            {{((currentWeather.current.wind_speed_10m) | number:'2.0-1') +" "+
             currentWeather.current_units.wind_speed_10m}}
         </mat-card-content>
     </mat-card>
 </div>
+
+</div>
+

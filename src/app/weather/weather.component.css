@@ -6,19 +6,21 @@
 }
 
 .weather-item-container{
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .icon-and-heading-text {
     display: flex;
-    align-items: center;
     font-weight: bold;
-    color: gray;
 }
 
 .icon {
 margin-right: 5px;
 color: red;
+}
+
+.temperature-unit-conversion{
+    margin-left: -10px;
 }
 
 .loc-coordinate {
@@ -32,4 +34,24 @@ color: red;
 
 .weather-data-value {
     margin-left: 30px;
+}
+
+.server-error-message {
+    background-color: orangered;
+    margin-bottom: 10px;
+    color: white;
+    display: flex;
+    padding-left: 19px;
+}
+
+.icon-and-heading-error-message {
+    display: flex;
+}
+
+.error-message{
+    margin-left: 30px;
+}
+
+.error-icon {
+    color: white;
 }

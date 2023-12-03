@@ -10,4 +10,25 @@ body {
 .container{
     max-width: 1200px;
     margin: auto;
+ 
 }
+
+.weather-content-container {
+    background-image: url('^assets/3.jpg');
+    background-color: white;
+    padding: 20px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-bottom: 50px;
+    padding-top: 50px;
+    
+}
+
+.weather-item-container {
+    opacity: 0.7;
+}
+
+ .weather-data-value{
+    font-size: 16px;
+}
+

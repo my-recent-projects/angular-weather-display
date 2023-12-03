@@ -15,9 +15,8 @@ export class WeathertService {
   }
 
   async GetWeatherInformation(requestParam: IWeatherRequestParam) {
-
     const weatherApiResponse = await fetchWeatherApi(this._apiUrl, requestParam);
-    // const _weatherDetails = weatherApiResponse;
+    const _weatherDetails = weatherApiResponse[0];
     return weatherApiResponse;
   }
 }
