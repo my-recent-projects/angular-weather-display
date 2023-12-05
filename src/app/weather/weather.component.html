@@ -31,7 +31,7 @@
 </mat-card>
 
 
-<div *ngIf="_error">
+<div *ngIf="_geoLocationError">
 
     <mat-card class="weather-item-container">
         <mat-card-header>
@@ -48,7 +48,7 @@
 </div>
 
 
-<div *ngIf="!_error">
+<div *ngIf="!_geoLocationError">
 
     <mat-card class="weather-item-container">
         <mat-card-header>
@@ -58,7 +58,13 @@
             </div>
         </mat-card-header>
         <mat-card-content class="weather-data-value">
+
+            <!-- from http response -->
             [ {{currentWeather.latitude}} ,  {{currentWeather.longitude}} ]
+
+            <!-- Direct from geoLocation API 
+            [ {{Latitude}} , {{Longitude}} ] -->
+
         </mat-card-content>
     </mat-card>
 

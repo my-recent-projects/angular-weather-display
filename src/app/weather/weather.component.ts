@@ -1,4 +1,4 @@
-import { Component, NgModule ,OnInit } from '@angular/core';
+import { Component, NgModule ,OnInit, OnDestroy } from '@angular/core';
 import { GeolocationService } from '@ng-web-apis/geolocation';
 import { ILocationCoordinates } from '../shared/interfaces/i-location';
 import { catchError, first, map, take, throwError } from 'rxjs';
@@ -10,23 +10,22 @@ import { ICurrentWeather } from '../shared/interfaces/i-current-weather';
   templateUrl: './weather.component.html',
   styleUrls: ['./weather.component.css']
 })
-export class WeatherComponent implements OnInit {
+export class WeatherComponent implements OnInit, OnDestroy {
 
   private userLocation: ILocationCoordinates;
+  _geoLocationError: any;
+  private _latitude: number = 0;
+  private _longitude: number = 0;
+  _userGeoLocationOb: any;
+  _error: any;
+  
   private weatherRequestParameters: IWeatherRequestParam;
   currentWeather: ICurrentWeather;
   currentWeatherTemperature: number = 0;
   currentWeatherTemperatureUnit: string = "";
   _selectedUnitOption: number = 1;
   _httpResponseError: string = '';
-
-  private _geoLocationError: any;
-  private _latitude: number = 0;
-  private _longitude: number = 0;
-
-  _userGeoLocation: any;
-  _error: any;
-
+  
   temperatureUnits = [
     { id: 1, name: 'Celsius', checked: true },
     { id: 2, name: 'Fahrenheit', checked: false }
@@ -88,14 +87,14 @@ export class WeatherComponent implements OnInit {
   //initialize the component
   ngOnInit(): void {
     this.GetCurrentUserLocation();
-    this.GetCurrentWeather();
   }
 
   //request current user geolocation
   private GetCurrentUserLocation(){
 
-    this.geoLocationService$.pipe(
-      first(),
+    this._userGeoLocationOb = this.geoLocationService$.pipe(
+       take(1),
+      // first(),
        map((_userGeolocation: any) => {
          if (!_userGeolocation) {
            throwError;
@@ -114,15 +113,18 @@ export class WeatherComponent implements OnInit {
           latitude: _userGeoLocation.coords.latitude,
           longitude: _userGeoLocation.coords.longitude
           }
-        console.log('==== Location detected =====')
+        console.log('==== geoLocation detected =====')
         console.log(this.userLocation);
         
         this.GetCurrentWeather();
       },
-      error: (_geoLocationError: Error) => {
+      error: (_Error: Error) => {
 
-        this._geoLocationError = _geoLocationError;
-        this.ErrorHandler(this._geoLocationError);
+   
+        this.GeoLocationErrorHandler(_Error);
+
+        console.log('==== geoLocation Error detected =====')
+        console.log(_Error);
       }
 
     })
@@ -158,7 +160,8 @@ export class WeatherComponent implements OnInit {
     return this.weatherRequestParameters;
   }
 
-  async GetCurrentWeather() {
+  //retrieve weather information of the provided geoLocation
+  private async GetCurrentWeather() {
 
     let weatherParams = this.SetWeatherRequestParameters;
     
@@ -168,7 +171,6 @@ export class WeatherComponent implements OnInit {
       const _currentWeather = _weatherDetails.current()!;
 
       this.currentWeather = {
-
         latitude: _weatherDetails.latitude(),
         longitude: _weatherDetails.longitude(),
         generationtime_ms: _weatherDetails.generationTimeMilliseconds(),
@@ -188,36 +190,40 @@ export class WeatherComponent implements OnInit {
         },
         current: {
           time: new Date((Number(_currentWeather.time()) + _weatherDetails.utcOffsetSeconds()) * 1000).toString(),
-          interval: _currentWeather.variables(1)!.value(),
+          //map values as per indexes
           temperature_2m: _currentWeather.variables(0)!.value(),
-
-          //correct
           relative_humidity_2m: _currentWeather.variables(1)!.value(),
-
           is_day: _currentWeather.variables(6)!.value(),
-
-          //correct
           rain: _currentWeather.variables(2)!.value(),
-          //correct
-          wind_speed_10m: _currentWeather.variables(3)!.value()
+          wind_speed_10m: _currentWeather.variables(3)!.value(),
+          
+          //not being dispalyed in the template
+          interval: _currentWeather.variables(4)!.value(),
         }
-
       }
+      
+      console.log('==== HTTP response data [Weather]')
+      console.log(this.currentWeather);
 
       //set updated temperature units
       this.ChangeTemperatureUnit(this._selectedUnitOption);
-      
+ 
     } catch (e) {
-                if (e) {
-                  this.WeatherErrorHandler(e);
-                }
+      if (e) {
+        
+        console.log('==== HTTP response error detected ')
+        console.log(e);
+
+        this.WeatherErrorHandler(e);
+      }
     }
+
+    
 
     return this.currentWeather;
       
   }
 
-  
   //Toggle temperature units [ °C vs °F ]
   ChangeTemperatureUnit(_selectedUnitOption: number) {
 
@@ -233,7 +239,6 @@ export class WeatherComponent implements OnInit {
     }
   }
 
-  
   //get current system date
   get CurrentDate() {
     let currentDate = new Date()
@@ -241,14 +246,18 @@ export class WeatherComponent implements OnInit {
   }
 
   //handle geoLocation errors
-  private ErrorHandler(_geoError: Error) {
-    this._error = _geoError;
-    console.log(_geoError);
+  private GeoLocationErrorHandler(_Error: Error) {
+    this._geoLocationError = _Error;
   }
 
   //Handling server error
   private WeatherErrorHandler(_weatherRequestError: any) {
     this._httpResponseError = "Loading weather information failed! "
+  }
+
+  ngOnDestroy() {
+    this._userGeoLocationOb.unsubscribe();
+    console.log('_userGeoLocationOb unsubscribed!');
   }
 
 
