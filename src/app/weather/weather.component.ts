@@ -3,30 +3,32 @@ import { GeolocationService } from '@ng-web-apis/geolocation';
 import { ILocationCoordinates } from '../shared/interfaces/i-location';
 import { catchError, first, map, take, throwError } from 'rxjs';
 import { IWeatherRequestParam } from '../shared/interfaces/i-weather-request-param';
-import { WeathertService } from '../services/weather-forecast.service';
+import { WeathertService } from '../shared/services/weather-forecast.service';
 import { ICurrentWeather } from '../shared/interfaces/i-current-weather';
+
 @Component({
   selector: 'app-weather',
   templateUrl: './weather.component.html',
   styleUrls: ['./weather.component.css']
 })
+  
 export class WeatherComponent implements OnInit, OnDestroy {
 
-  private userLocation: ILocationCoordinates;
+  private _userLocation: ILocationCoordinates;
   _geoLocationError: any;
   private _latitude: number = 0;
   private _longitude: number = 0;
   _userGeoLocationOb: any;
   _error: any;
   
-  private weatherRequestParameters: IWeatherRequestParam;
-  currentWeather: ICurrentWeather;
-  currentWeatherTemperature: number = 0;
-  currentWeatherTemperatureUnit: string = "";
+  private _weatherRequestParameters: IWeatherRequestParam;
+  _currentWeather: ICurrentWeather;
+  _currentWeatherTemperature: number = 0;
+  _currentWeatherTemperatureUnit: string = "";
   _selectedUnitOption: number = 1;
   _httpResponseError: string = '';
   
-  temperatureUnits = [
+  _temperatureUnits = [
     { id: 1, name: 'Celsius', checked: true },
     { id: 2, name: 'Fahrenheit', checked: false }
   ];
@@ -34,13 +36,13 @@ export class WeatherComponent implements OnInit, OnDestroy {
   constructor(private readonly geoLocationService$: GeolocationService, private weatherService: WeathertService) { 
     
     //initialize gealocation coordinates [Lat & Long]
-    this.userLocation = {
+    this._userLocation = {
       latitude: 0,
       longitude: 0
     } 
 
     //initialize http request parameters
-    this.weatherRequestParameters = {
+    this._weatherRequestParameters = {
       latitude: 0,
       longitude: 0,
       current: [
@@ -53,7 +55,7 @@ export class WeatherComponent implements OnInit, OnDestroy {
     }
 
     //initialize http response parameters
-    this.currentWeather = {
+    this._currentWeather = {
 
       latitude: 0,
       longitude: 0,
@@ -81,7 +83,6 @@ export class WeatherComponent implements OnInit, OnDestroy {
         wind_speed_10m: 0
       }
     }
-
   }
 
   //initialize the component
@@ -93,9 +94,9 @@ export class WeatherComponent implements OnInit, OnDestroy {
   private GetCurrentUserLocation(){
 
     this._userGeoLocationOb = this.geoLocationService$.pipe(
-       take(1),
+      take(1),
       // first(),
-       map((_userGeolocation: any) => {
+      map((_userGeolocation: any) => {
          if (!_userGeolocation) {
            throwError;
          }
@@ -109,43 +110,39 @@ export class WeatherComponent implements OnInit, OnDestroy {
       next: (_userGeoLocation) => {
 
           //set detected location coordinates
-          this.userLocation = {
+          this._userLocation = {
           latitude: _userGeoLocation.coords.latitude,
           longitude: _userGeoLocation.coords.longitude
           }
         console.log('==== geoLocation detected =====')
-        console.log(this.userLocation);
+        console.log(this._userLocation);
         
         this.GetCurrentWeather();
       },
       error: (_Error: Error) => {
-
-   
         this.GeoLocationErrorHandler(_Error);
-
         console.log('==== geoLocation Error detected =====')
         console.log(_Error);
       }
-
     })
    
-    return this.userLocation; 
+    return this._userLocation; 
   }
 
   //get geoLocation latitude
   get Latitude() {
-    return this.userLocation?.latitude;
+    return this._userLocation?.latitude;
   }
 
   //get geoLocation longitude
   get Longitude() {
-    return this.userLocation?.longitude;
+    return this._userLocation?.longitude;
   }
 
   //set all required http parameters
   private get SetWeatherRequestParameters() {
 
-    this.weatherRequestParameters = {
+    this._weatherRequestParameters = {
       latitude: this.Latitude,
       longitude: this.Longitude,
       current: [
@@ -157,7 +154,7 @@ export class WeatherComponent implements OnInit, OnDestroy {
       forecast_days: 1
     };
 
-    return this.weatherRequestParameters;
+    return this._weatherRequestParameters;
   }
 
   //retrieve weather information of the provided geoLocation
@@ -170,7 +167,7 @@ export class WeatherComponent implements OnInit, OnDestroy {
       const _weatherDetails = _weatherApiResponse[0];
       const _currentWeather = _weatherDetails.current()!;
 
-      this.currentWeather = {
+      this._currentWeather = {
         latitude: _weatherDetails.latitude(),
         longitude: _weatherDetails.longitude(),
         generationtime_ms: _weatherDetails.generationTimeMilliseconds(),
@@ -203,7 +200,7 @@ export class WeatherComponent implements OnInit, OnDestroy {
       }
       
       console.log('==== HTTP response data [Weather]')
-      console.log(this.currentWeather);
+      console.log(this._currentWeather);
 
       //set updated temperature units
       this.ChangeTemperatureUnit(this._selectedUnitOption);
@@ -220,29 +217,29 @@ export class WeatherComponent implements OnInit, OnDestroy {
 
     
 
-    return this.currentWeather;
+    return this._currentWeather;
       
   }
 
   //Toggle temperature units [ °C vs °F ]
   ChangeTemperatureUnit(_selectedUnitOption: number) {
 
-    //convert from °C to °F and its unit symbol
+    //convert from Celsius to Fahrenheit and its unit symbol [°C to °F ]
     if (_selectedUnitOption == 2) {
-      this.currentWeatherTemperature = this.currentWeather.current.temperature_2m * 9.0 / 5.0 + 32;
-      this.currentWeatherTemperatureUnit = "°F";
+      this._currentWeatherTemperature = this._currentWeather.current.temperature_2m * 9.0 / 5.0 + 32;
+      this._currentWeatherTemperatureUnit = "°F";
       
     } else {
-      //Asign °C value and its unit symbol
-      this.currentWeatherTemperature = this.currentWeather.current.temperature_2m;
-      this.currentWeatherTemperatureUnit = this.currentWeather.current_units.temperature_2m;
+      //Keep the value and its unit as Celsius [°C]
+      this._currentWeatherTemperature = this._currentWeather.current.temperature_2m;
+      this._currentWeatherTemperatureUnit = this._currentWeather.current_units.temperature_2m;
     }
   }
 
   //get current system date
   get CurrentDate() {
-    let currentDate = new Date()
-    return currentDate;
+    let _currentDate = new Date()
+    return _currentDate;
   }
 
   //handle geoLocation errors
@@ -259,8 +256,6 @@ export class WeatherComponent implements OnInit, OnDestroy {
     this._userGeoLocationOb.unsubscribe();
     console.log('_userGeoLocationOb unsubscribed!');
   }
-
-
 
 }
 

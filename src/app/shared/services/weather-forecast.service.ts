@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { fetchWeatherApi } from 'openmeteo';
-import { IWeatherRequestParam } from '../shared/interfaces/i-weather-request-param';
-import { environment } from '../shared/base-url/baseUrl';
+import { IWeatherRequestParam } from '../interfaces/i-weather-request-param';
+import { environment } from '../base-url/baseUrl';
 
 @Injectable({
   providedIn: 'root'
