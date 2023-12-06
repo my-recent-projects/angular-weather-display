@@ -1,7 +1,7 @@
-import { Component, NgModule ,OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GeolocationService } from '@ng-web-apis/geolocation';
 import { ILocationCoordinates } from '../shared/interfaces/i-location';
-import { catchError, first, map, take, throwError } from 'rxjs';
+import { catchError, map, take, throwError } from 'rxjs';
 import { IWeatherRequestParam } from '../shared/interfaces/i-weather-request-param';
 import { WeathertService } from '../shared/services/weather-forecast.service';
 import { ICurrentWeather } from '../shared/interfaces/i-current-weather';

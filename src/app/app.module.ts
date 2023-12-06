@@ -7,8 +7,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './shared/material/material.module';
 
 import { WeatherComponent } from './weather/weather.component';
-
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { WeathertService } from './shared/services/weather-forecast.service';
 
 @NgModule({
@@ -20,8 +18,7 @@ import { WeathertService } from './shared/services/weather-forecast.service';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MaterialModule,
-    FlexLayoutModule 
+    MaterialModule, 
   ],
   providers: [WeathertService],
   bootstrap: [AppComponent]
